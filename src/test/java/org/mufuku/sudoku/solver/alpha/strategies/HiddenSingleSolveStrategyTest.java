@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
  */
 public class HiddenSingleSolveStrategyTest {
 
-    private HiddenSingleSolveStrategy strategy = new HiddenSingleSolveStrategy();
+    private final HiddenSingleSolveStrategy strategy = new HiddenSingleSolveStrategy();
 
     private static final String TEST1 =
             "x257x31xx" +
@@ -28,7 +28,7 @@ public class HiddenSingleSolveStrategyTest {
                     "1x9xxxxxx" +
                     "xx65x981x";
 
-    public static final String TEST2 =
+    private static final String TEST2 =
             "x257x318x" +
                     "8xxxxx973" +
                     "x7x8xx42x" +

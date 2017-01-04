@@ -14,7 +14,7 @@ import static org.junit.Assert.assertThat;
  */
 public class NakedSingleSolveStrategyTest {
 
-    private NakedSingleSolveStrategy strategy = new NakedSingleSolveStrategy();
+    private final NakedSingleSolveStrategy strategy = new NakedSingleSolveStrategy();
 
     private static final String TEST1 =
             "12345678x" +

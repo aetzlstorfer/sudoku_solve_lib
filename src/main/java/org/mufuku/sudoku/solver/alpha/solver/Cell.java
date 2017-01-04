@@ -13,13 +13,15 @@ import java.util.stream.Collectors;
  */
 public class Cell {
 
-    private final SymbolIndex symbolIndex;
-
-    private final BitSet candidates;
-
     private final int row;
 
     private final int col;
+
+    private final Table table;
+
+    private final SymbolIndex symbolIndex;
+
+    private final BitSet candidates;
 
     private int symbol;
 
@@ -29,9 +31,10 @@ public class Cell {
 
     private Cell[] subNeighbours;
 
-    public Cell(int col, int row, SymbolIndex symbolIndex) {
-        this.col = col;
+    public Cell(int row, int col, Table table, SymbolIndex symbolIndex) {
         this.row = row;
+        this.col = col;
+        this.table = table;
         this.symbolIndex = symbolIndex;
         this.candidates = new BitSet(symbolIndex.numberOfSymbols());
         this.candidates.set(0, symbolIndex.numberOfSymbols(), true);
@@ -44,6 +47,7 @@ public class Cell {
     public void setSymbol(int symbol) {
         this.symbol = symbol;
         if (symbol >= 0) {
+            this.table.increaseSolutionCount();
             this.candidates.set(0, symbolIndex.numberOfSymbols(), false);
         }
     }

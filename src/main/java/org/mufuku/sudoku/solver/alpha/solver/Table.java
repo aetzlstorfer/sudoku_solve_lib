@@ -24,6 +24,8 @@ public class Table {
 
     private final List<ISolveStrategy> solveStrategies;
 
+    private int solutionCount = 0;
+
     public Table(int height, int width, int subHeight, int subWidth, SymbolIndex symbolIndex, List<ISolveStrategy> solveStrategies) {
         this.height = height;
         this.width = width;
@@ -34,9 +36,24 @@ public class Table {
         this.cells = new Cell[height][width];
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                this.cells[row][col] = new Cell(col, row, symbolIndex);
+                this.cells[row][col] = new Cell(row, col, this, symbolIndex);
             }
         }
+        initializeFieldDependencies();
+    }
+
+    public Table(Table original) {
+        this(original.height, original.width, original.subHeight, original.subWidth,
+                original.symbolIndex, original.solveStrategies);
+        original.forEach((row, col, subRow, subCol, cell) -> {
+            Cell copyCell = getAt(row, col);
+            copyCell.setSymbol(cell.getSymbol());
+            copyCell.getCandidates().clear();
+            for (int candidate : cell.getCandidatesAsArray()) {
+                copyCell.getCandidates().set(candidate, true);
+            }
+        });
+        this.solutionCount = original.solutionCount;
     }
 
     public void forEach(ITableIterator iterator) {
@@ -54,7 +71,7 @@ public class Table {
     }
 
     @SuppressWarnings("unchecked")
-    public void initializeFieldDependencies() {
+    private void initializeFieldDependencies() {
         // link row neighbours
         this.forEach((row, col, subRow, subCol, cell) -> cell.setRowNeighbours(cells[row]));
 
@@ -87,6 +104,10 @@ public class Table {
     }
 
     public void solve() {
+        solve0(true);
+    }
+
+    private void solve0(boolean backtrack) {
         boolean progress;
         do {
             progress = false;
@@ -94,6 +115,48 @@ public class Table {
                 progress = progress || strategy.perform(this);
             }
         } while (progress);
+        if (backtrack && solutionCount < width * height) {
+            List<Cell> openCells = new ArrayList<>(width * height - solutionCount);
+            forEach((row, col, subRow, subCol, cell) -> {
+                if (cell.getSymbol() < 0) {
+                    openCells.add(cell);
+                }
+            });
+            Collections.sort(openCells, (o1, o2) ->
+                    Integer.compare(o1.getCandidates().cardinality(), o2.getCandidates().cardinality()));
+            Arrays.copyOf(cells, cells.length);
+            Table solution = backtrack(openCells, 0, this);
+            if (solution != null) {
+                forEach((row, col, subRow, subCol, cell) ->
+                        this.cells[row][col] = solution.cells[row][col]);
+                this.solutionCount = solution.solutionCount;
+            }
+        }
+    }
+
+    private Table backtrack(List<Cell> openCells, int index, Table parent) {
+        Cell candidateCell = openCells.get(index);
+        int[] candidates = candidateCell.getCandidatesAsArray();
+        for (int candidate : candidates) {
+            Table table = new Table(parent);
+
+            Cell cell = table.getAt(candidateCell.getRow(), candidateCell.getCol());
+            cell.setSymbol(candidate);
+            cell.refreshNeighbours();
+
+            table.solve0(false);
+
+            if (table.valid() && table.candidatesValid()) {
+                if (table.solved()) {
+                    return table;
+                }
+                Table result = backtrack(openCells, index + 1, table);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
     }
 
     public boolean valid() {
@@ -146,6 +209,9 @@ public class Table {
 
     public boolean solved() {
         try {
+            if (solutionCount < height * width) {
+                return false;
+            }
             forEach((row, col, subRow, subCol, cell) -> {
                 if (cell.getSymbol() < 0) {
                     throw new IllegalStateException("unset cell");
@@ -155,6 +221,10 @@ public class Table {
         } catch (IllegalStateException e) {
             return false;
         }
+    }
+
+    void increaseSolutionCount() {
+        this.solutionCount++;
     }
 
     public int getHeight() {

@@ -33,7 +33,9 @@ public class SudokuMassTest {
 
     private static int solved = 0;
 
-    private static Map<Class, Long> stopwatchMap = new HashMap<>();
+    private static final Map<Class, Long> stopwatchMap = new HashMap<>();
+
+    private static long start;
 
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -52,6 +54,7 @@ public class SudokuMassTest {
                 solveStrategies.stream().map(s -> new StopwatchWrapperSolveStrategy(s, stopwatchMap)).collect(Collectors.toList());
 
         this.reader = new Reader(9, 9, 3, 3, symbolIndex, wrappedStrategies);
+        start = System.currentTimeMillis();
     }
 
     @Test
@@ -83,6 +86,11 @@ public class SudokuMassTest {
 
         stopwatchMap.forEach((clz, runtime) ->
                 System.out.println(clz.getSimpleName() + " -> " + runtime / 1000.0 + "ms"));
+
+        System.out.println("---");
+        long runtime = (System.currentTimeMillis() - start);
+        System.out.println("total run: " + runtime + "ms");
+        System.out.println("time / sudoku: " + (double)runtime / (double)total + "ms");
     }
 
     private void testFile(String fileName, char noCandidateChar) throws Exception {

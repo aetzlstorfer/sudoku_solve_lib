@@ -3,8 +3,6 @@ package org.mufuku.sudoku.solver.alpha.reader;
 import org.apache.commons.lang3.StringUtils;
 import org.mufuku.sudoku.solver.alpha.solver.Table;
 import org.mufuku.sudoku.solver.alpha.strategies.*;
-import org.mufuku.sudoku.solver.alpha.strategies.IntersectionClaimingSolveStrategy;
-import org.mufuku.sudoku.solver.alpha.strategies.IntersectionPointingSolveStrategy;
 
 import java.util.Arrays;
 import java.util.List;
@@ -61,7 +59,6 @@ public class Reader implements IReader {
             int symbolIndex = this.symbolIndex.getSymbolIndex("" + content.charAt(row * height + col));
             cell.setSymbol(symbolIndex);
         });
-        table.initializeFieldDependencies();
         table.calculateCandidates();
         return table;
     }

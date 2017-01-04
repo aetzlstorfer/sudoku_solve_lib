@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
  */
 public class NakedPairSolveStrategyTest {
 
-    private NakedPairSolveStrategy strategy = new NakedPairSolveStrategy();
+    private final NakedPairSolveStrategy strategy = new NakedPairSolveStrategy();
 
     @Test
     public void test_twoPairsInRow_eliminatePair() {

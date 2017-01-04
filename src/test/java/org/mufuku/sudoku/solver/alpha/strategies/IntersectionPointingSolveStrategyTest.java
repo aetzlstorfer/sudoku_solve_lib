@@ -14,7 +14,7 @@ import static org.junit.Assert.assertThat;
  */
 public class IntersectionPointingSolveStrategyTest {
 
-    private IntersectionPointingSolveStrategy strategy = new IntersectionPointingSolveStrategy();
+    private final IntersectionPointingSolveStrategy strategy = new IntersectionPointingSolveStrategy();
 
     @Test
     public void test_verticalBar_eliminateNeighbours() {
