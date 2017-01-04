@@ -99,6 +99,13 @@ public class Cell {
         return changed;
     }
 
+    public void clearCandidatesExcept(int... candidates) {
+        this.candidates.clear();
+        for (int candidate : candidates) {
+            this.candidates.set(candidate, true);
+        }
+    }
+
     public List<String> getCandidateSymbols() {
         return this.candidates.stream().mapToObj(symbolIndex::getSymbol).collect(Collectors.toList());
     }

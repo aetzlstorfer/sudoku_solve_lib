@@ -101,12 +101,10 @@ public class SudokuMassTest {
                     solved++;
                 } else {
                     assertThat(table.candidatesValid(), is(true));
-                }
-//                else {
 //                    System.out.println(table.toString());
 //                    System.out.println(table.getCandidateString());
 //                    System.out.println("---");
-//                }
+                }
             });
         }
     }

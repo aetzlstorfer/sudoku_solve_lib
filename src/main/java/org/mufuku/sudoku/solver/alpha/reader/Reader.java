@@ -22,7 +22,8 @@ public class Reader implements IReader {
                     new HiddenSingleSolveStrategy(),
                     new IntersectionPointingSolveStrategy(),
                     new NakedPairSolveStrategy(),
-                    new IntersectionClaimingSolveStrategy()
+                    new IntersectionClaimingSolveStrategy(),
+                    new HiddenPairSolveStrategy()
             ));
 
     private final int height;
