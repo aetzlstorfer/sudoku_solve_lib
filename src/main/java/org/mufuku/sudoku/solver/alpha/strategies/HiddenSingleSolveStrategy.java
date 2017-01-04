@@ -35,10 +35,10 @@ public class HiddenSingleSolveStrategy implements ISolveStrategy {
         boolean changed = false;
         int[] counts = new int[numberOfSymbols];
         Cell[] lastIndex = new Cell[numberOfSymbols];
-        for (Cell rowNeighbour : neighbours) {
-            rowNeighbour.getCandidates().stream().forEach(candidate -> {
+        for (Cell neighbour : neighbours) {
+            neighbour.getCandidates().stream().forEach(candidate -> {
                 counts[candidate]++;
-                lastIndex[candidate] = rowNeighbour;
+                lastIndex[candidate] = neighbour;
             });
         }
         for (int candidate = 0; candidate < counts.length; candidate++) {
