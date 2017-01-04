@@ -106,6 +106,10 @@ public class Cell {
         }
     }
 
+    public void clearCandidate(int candidate) {
+        this.candidates.set(candidate, false);
+    }
+
     public List<String> getCandidateSymbols() {
         return this.candidates.stream().mapToObj(symbolIndex::getSymbol).collect(Collectors.toList());
     }
