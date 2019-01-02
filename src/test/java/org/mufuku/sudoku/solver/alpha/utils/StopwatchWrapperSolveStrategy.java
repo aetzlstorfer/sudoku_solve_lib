@@ -14,17 +14,31 @@ public class StopwatchWrapperSolveStrategy implements ISolveStrategy {
 
     private final Map<Class, Long> stopwatchMap;
 
-    public StopwatchWrapperSolveStrategy(ISolveStrategy strategy, Map<Class, Long> stopwatchMap) {
+    private final Map<Class, Long> hitMap;
+
+    public StopwatchWrapperSolveStrategy(ISolveStrategy strategy, Map<Class, Long> stopwatchMap, Map<Class, Long> hitMap) {
         this.strategy = strategy;
         this.stopwatchMap = stopwatchMap;
+        this.hitMap = hitMap;
     }
 
     @Override
     public boolean perform(Table table) {
-        long start = System.nanoTime();
+        long start = System.currentTimeMillis();
         boolean result = strategy.perform(table);
-        long end = System.nanoTime();
-        stopwatchMap.put(strategy.getClass(), end - start);
+        long end = System.currentTimeMillis();
+
+        Class<? extends ISolveStrategy> strategyClass = strategy.getClass();
+
+        Long timeSoFar = stopwatchMap.getOrDefault(strategyClass, 0L);
+        timeSoFar += end - start;
+        stopwatchMap.put(strategyClass, timeSoFar);
+
+        if (result) {
+            Long hits = hitMap.getOrDefault(strategyClass, 0L);
+            hitMap.put(strategyClass, ++hits);
+        }
+
         return result;
     }
 }

@@ -2,6 +2,7 @@ package org.mufuku.sudoku.solver.alpha;
 
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mufuku.sudoku.solver.alpha.reader.Reader;
 import org.mufuku.sudoku.solver.alpha.reader.SymbolIndex;
@@ -35,7 +36,14 @@ public class SudokuMassTest {
 
     private static final Map<Class, Long> stopwatchMap = new HashMap<>();
 
+    private static final Map<Class, Long> hitMap = new HashMap<>();
+
     private static long start;
+
+    @BeforeClass
+    public static void setup() {
+        start = System.currentTimeMillis();
+    }
 
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -51,10 +59,9 @@ public class SudokuMassTest {
         List<ISolveStrategy> solveStrategies = (List<ISolveStrategy>) solveStrategiesField.get(base);
 
         List<ISolveStrategy> wrappedStrategies =
-                solveStrategies.stream().map(s -> new StopwatchWrapperSolveStrategy(s, stopwatchMap)).collect(Collectors.toList());
+                solveStrategies.stream().map(s -> new StopwatchWrapperSolveStrategy(s, stopwatchMap, hitMap)).collect(Collectors.toList());
 
         this.reader = new Reader(9, 9, 3, 3, symbolIndex, wrappedStrategies);
-        start = System.currentTimeMillis();
     }
 
     @Test
@@ -77,6 +84,11 @@ public class SudokuMassTest {
         testFile("andoku3.txt", '0');
     }
 
+    @Test
+    public void test_nachrichten_at() throws Exception {
+        testFile("nachrichten.at_sudoku.txt", '0');
+    }
+
     @AfterClass
     public static void after() {
         System.out.println("total      : " + total);
@@ -85,12 +97,12 @@ public class SudokuMassTest {
         System.out.println("---");
 
         stopwatchMap.forEach((clz, runtime) ->
-                System.out.println(clz.getSimpleName() + " -> " + runtime / 1000.0 + "ms"));
+                System.out.println(clz.getSimpleName() + " -> " + runtime + "ms, hits: " + hitMap.get(clz)));
 
         System.out.println("---");
         long runtime = (System.currentTimeMillis() - start);
         System.out.println("total run: " + runtime + "ms");
-        System.out.println("time / sudoku: " + (double)runtime / (double)total + "ms");
+        System.out.println("time / sudoku: " + (double) runtime / (double) total + "ms");
     }
 
     private void testFile(String fileName, char noCandidateChar) throws Exception {
@@ -109,10 +121,10 @@ public class SudokuMassTest {
                     solved++;
                 } else {
                     assertThat(table.candidatesValid(), is(true));
-//                    System.out.println(table.toString());
-//                    System.out.println(table.getCandidateString());
-//                    System.out.println("---");
                 }
+                System.out.println(table.toString());
+                System.out.println(table.getCandidateString());
+                System.out.println("---");
             });
         }
     }
